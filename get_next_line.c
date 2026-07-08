@@ -17,10 +17,8 @@ char	*add_to_stash(int fd, char *content, int *bytes)
 	char	buffer[BUFFER_SIZE];
 
 	*bytes = read(fd, buffer, BUFFER_SIZE);
-	if (*bytes < 0)
+	if (*bytes <= 0)
 		return (NULL);
-	if (*bytes == 0)
-		return (content);
 	content = malloc(*bytes + 1);
 	if (!content)
 		return (NULL);
@@ -41,12 +39,12 @@ char	*append_stash(int fd, char *content, int *bytes)
 	new_content = NULL;
 	len = ft_strlen(content);
 	if (*bytes < 0)
-		return (NULL);
+		return (free(content), NULL);
 	if (*bytes == 0)
 		return (content);
 	new_content = malloc(len + *bytes + 1);
 	if (!new_content)
-		return (NULL);
+		return (free(content), NULL);
 	ft_memcpy(new_content, content, len);
 	free(content);
 	ft_memcpy(&new_content[len], buffer, *bytes);
@@ -60,13 +58,15 @@ char	*save_line(char *stash)
 	size_t	len;
 
 	line = NULL;
-	if (!stash)
+	if (!stash || !stash[0])
 		return (line);
 	if (get_line_end(stash))
 		len = ft_linelen(stash);
 	else
 		len = ft_strlen(stash);
 	line = malloc(len + 1);
+	if (!line)
+		return (NULL);
 	ft_memcpy(line, stash, len);
 	line[len] = '\0';
 	return (line);
@@ -78,25 +78,23 @@ char	*mod_stash(char *stash, int *bytes)
 	char	*temp;
 	size_t	len;
 
+	if (!stash)
+		return (NULL);
 	if (!*bytes)
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (free(stash), NULL);
 	temp = get_line_end(stash);
-	if (temp)
-		len = ft_strlen(temp++);
-	else
-		len = ft_strlen(stash);
+	if (!temp)
+		return (free(stash), NULL);
+	temp++;
+	len = ft_strlen(temp);
 	if (len == 0)
-		return (NULL);
+		return (free(stash), NULL);
 	new_stash = malloc(len + 1);
 	if (!new_stash)
-		return (NULL);
+		return (free(stash), NULL);
 	ft_memcpy(new_stash, temp, len);
-	free(stash);
 	new_stash[len] = '\0';
-	return (new_stash);
+	return (free(stash), new_stash);
 }
 
 char	*get_next_line(int fd)
@@ -112,30 +110,32 @@ char	*get_next_line(int fd)
 	while (bytes > 0 && !get_line_end(stash))
 		stash = append_stash(fd, stash, &bytes);
 	line = save_line(stash);
+	if (!line)
+		return (free(stash), stash = NULL, NULL);
 	stash = mod_stash(stash, &bytes);
 	return (line);
 }
 
-// #include <fcntl.h>
-// #include <stdio.h>
-// #include "get_next_line.h"
+/* #include <fcntl.h>
+#include <stdio.h>
+#include "get_next_line.h"
 
-// int	main(void)
-// {
-// 	int		fd;
-// 	char	*line;
-// 	int		count;
+int	main(void)
+{
+	int		fd;
+	char	*line;
+	int		count;
 
-// 	fd = open("test.txt", O_RDONLY);
-// 	count = 0;
-// 	line = get_next_line(fd);
-// 	while (line)
-// 	{
-// 		++count;
-// 		printf("[LINE %d]: %s\n\n", count, line);
-// 		free(line);
-// 		line = get_next_line(fd);
-// 	}
-// 	close(fd);
-// 	return (0);
-// }
+	fd = open("test.txt", O_RDONLY);
+	count = 0;
+	line = get_next_line(fd);
+	while (line)
+	{
+		++count;
+		printf("[LINE %d]: %s\n\n", count, line);
+		free(line);
+		line = get_next_line(fd);
+	}
+	close(fd);
+	return (0);
+} */

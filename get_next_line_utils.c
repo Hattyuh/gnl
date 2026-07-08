@@ -15,11 +15,10 @@
 char	*get_line_end(const char *s)
 {
 	size_t	i;
+
 	if (!s)
 		return (NULL);
 	i = 0;
-	if (!s)
-		return (NULL);
 	while (s[i])
 	{
 		if (s[i] == '\n')
@@ -62,6 +61,8 @@ size_t	ft_linelen(const char *str)
 
 	len = 0;
 	while (str[len] != '\0' && str[len] != '\n')
+		len++;
+	if (str[len] == '\n')
 		len++;
 	return (len);
 }
