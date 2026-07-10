@@ -108,7 +108,11 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	while (bytes > 0 && !get_line_end(stash))
+	{
 		stash = append_stash(fd, stash, &bytes);
+		if (!stash)
+			return (NULL);
+	}
 	line = save_line(stash);
 	if (!line)
 		return (free(stash), stash = NULL, NULL);
