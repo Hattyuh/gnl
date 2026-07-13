@@ -6,7 +6,7 @@
 /*   By: rkosa <rkosa@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 18:52:29 by rkosa             #+#    #+#             */
-/*   Updated: 2026/06/30 14:49:23 by rkosa            ###   ########.fr       */
+/*   Updated: 2026/07/13 14:04:41 by rkosa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,42 +14,48 @@
 
 char	*add_to_stash(int fd, char *content, int *bytes)
 {
-	char	buffer[BUFFER_SIZE];
+	char	*buffer;
 
+	buffer = malloc(BUFFER_SIZE);
+	if (!buffer)
+		return (NULL);
 	*bytes = read(fd, buffer, BUFFER_SIZE);
 	if (*bytes <= 0)
-		return (NULL);
+		return (free(buffer), NULL);
 	content = malloc(*bytes + 1);
 	if (!content)
-		return (NULL);
+		return (free(buffer), NULL);
 	ft_memcpy(content, buffer, *bytes);
 	content[*bytes] = '\0';
-	return (content);
+	return (free(buffer), content);
 }
 
 char	*append_stash(int fd, char *content, int *bytes)
 {
-	char	buffer[BUFFER_SIZE];
+	char	*buffer;
 	char	*new_content;
 	size_t	len;
 
 	if (!content)
 		return (add_to_stash(fd, content, bytes));
+	buffer = malloc(BUFFER_SIZE);
+	if (!buffer)
+		return (free(content), NULL);
 	*bytes = read(fd, buffer, BUFFER_SIZE);
 	new_content = NULL;
 	len = ft_strlen(content);
 	if (*bytes < 0)
-		return (free(content), NULL);
+		return (free(buffer), free(content), NULL);
 	if (*bytes == 0)
-		return (content);
+		return (free(buffer), content);
 	new_content = malloc(len + *bytes + 1);
 	if (!new_content)
-		return (free(content), NULL);
+		return (free(buffer), free(content), NULL);
 	ft_memcpy(new_content, content, len);
 	free(content);
 	ft_memcpy(&new_content[len], buffer, *bytes);
 	new_content[len + *bytes] = '\0';
-	return (new_content);
+	return (free(buffer), new_content);
 }
 
 char	*save_line(char *stash)
