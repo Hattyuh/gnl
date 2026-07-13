@@ -6,7 +6,7 @@
 /*   By: rkosa <rkosa@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 18:52:29 by rkosa             #+#    #+#             */
-/*   Updated: 2026/07/13 14:04:41 by rkosa            ###   ########.fr       */
+/*   Updated: 2026/07/13 17:39:42 by rkosa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,27 +125,3 @@ char	*get_next_line(int fd)
 	stash = mod_stash(stash, &bytes);
 	return (line);
 }
-
-/* #include <fcntl.h>
-#include <stdio.h>
-#include "get_next_line.h"
-
-int	main(void)
-{
-	int		fd;
-	char	*line;
-	int		count;
-
-	fd = open("test.txt", O_RDONLY);
-	count = 0;
-	line = get_next_line(fd);
-	while (line)
-	{
-		++count;
-		printf("[LINE %d]: %s\n\n", count, line);
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
-	return (0);
-} */
